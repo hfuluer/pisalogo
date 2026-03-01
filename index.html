@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pisagor Bağıntısı Egzersizi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Rapor ekran görüntüsü alabilmek için html2canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-gradient-start: #f8fafc;
+            --bg-gradient-end: #e2e8f0;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --success: #10b981;
+            --danger: #ef4444;
+            --gray: #64748b;
+            --border-radius: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1.main-title {
+            font-size: 2.2rem;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .rules-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            width: 100%;
+        }
+
+        .rules-card h3 {
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .rules-card ul {
+            list-style-position: inside;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .primary-btn {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+        }
+
+        .primary-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .secondary-btn {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .secondary-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 15px;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        .stat-col {
+            flex: 1;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .mini-counter {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .c-green {
+            color: var(--success);
+        }
+
+        .c-red {
+            color: var(--danger);
+        }
+
+        .c-gray {
+            color: var(--gray);
+        }
+
+        .c-blue {
+            color: var(--primary);
+        }
+
+        .bonus-banner {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50px);
+            background: #f59e0b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 800;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 100;
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .bonus-banner.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .svg-wrapper {
+            width: 100%;
+            max-width: 280px;
+            aspect-ratio: 1;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .answer-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .answer-section input {
+            flex: 1;
+            padding: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            text-align: center;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .answer-section input:focus {
+            border-color: var(--primary);
+        }
+
+        .error-text {
+            color: var(--danger);
+            font-size: 0.9rem;
+            height: 15px;
+            opacity: 0;
+            transition: 0.2s;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .error-text.show {
+            opacity: 1;
+        }
+
+        .report-card {
+            background: var(--card-bg);
+            width: 100%;
+            border-radius: 24px;
+            padding: 30px 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .report-title {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .report-main-stats {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 16px;
+            border: 2px dashed #cbd5e1;
+        }
+
+        .final-score-label {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .final-score-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin-top: 5px;
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .r-item {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .r-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .r-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .report-message-box {
+            margin-top: 5px;
+            padding: 15px;
+            border-radius: 12px;
+            background: #eef2ff;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .final-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .brand-logo {
+            max-width: 220px;
+            height: auto;
+            margin-bottom: -10px;
+        }
+
+        .report-logo {
+            max-width: 150px;
+            height: auto;
+            margin: 0 auto 10px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+
+        <!-- Başlangıç Ekranı -->
+        <div id="start-screen" class="screen active">
+            <img src="logo.png" alt="Studyprove Logo" class="brand-logo" />
+            <h1 class="main-title">Pisagor Bağıntısı</h1>
+            <p class="subtitle">Özel Dik Üçgenler Egzersizi</p>
+
+            <div class="rules-card">
+                <h3>Kurallar</h3>
+                <ul>
+                    <li>Toplam <strong>20 soru</strong> sorulacaktır. Özel üçgenlerin katları dahil edilmiştir.</li>
+                    <li>Sadece "x" değerini tam sayı olarak <strong>Cevap</strong> kutusuna yazınız.</li>
+                    <li><strong>Doğru:</strong> +10 Puan | <strong>Yanlış:</strong> -3 Puan | <strong>Boş:</strong> 0
+                        Puan</li>
+                    <li><strong>Seri Bonusları:</strong> 4'lük seri = +15, 10'luk seri = +100 Puan.</li>
+                </ul>
+            </div>
+
+            <button id="start-btn" class="btn primary-btn">Egzersize Başla</button>
+        </div>
+
+        <!-- Soru Ekranı -->
+        <div id="quiz-screen" class="screen">
+            <!-- Üst İstatistik Alanı -->
+            <div class="stats-header">
+                <div class="stat-col">Soru: <span id="ui-qnum">1/20</span></div>
+                <div class="stat-col text-center">Puan: <span id="ui-score">0</span></div>
+                <div class="stat-col text-right">Seri: <span id="ui-streak">0</span> 🔥</div>
+            </div>
+
+            <!-- Doğru/Yanlış Sayacı -->
+            <div class="mini-counter">
+                <span class="c-green">D: <span id="ui-correct">0</span></span>
+                <span class="c-red">Y: <span id="ui-wrong">0</span></span>
+                <span class="c-gray">B: <span id="ui-blank">0</span></span>
+            </div>
+
+            <!-- Bonus Banner -->
+            <div id="bonus-banner" class="bonus-banner">
+                <span id="bonus-text">Harika! +15 Puan</span>
+            </div>
+
+            <div class="question-card">
+                <div class="svg-wrapper" id="svg-container">
+                    <!-- SVG Buraya Çizilecek -->
+                </div>
+
+                <p class="question-text" id="question-text">Pisagor bağıntısını kullanarak x'i bulunuz.</p>
+
+                <div class="answer-section">
+                    <label for="answer-input">Cevap:</label>
+                    <input type="number" id="answer-input" autocomplete="off" placeholder="x = ?" />
+                </div>
+
+                <p id="error-message" class="error-text"></p>
+
+                <div class="action-buttons">
+                    <button id="skip-btn" class="btn secondary-btn">Boş Bırak</button>
+                    <button id="submit-btn" class="btn primary-btn">Cevapla</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sonuç (Rapor) Ekranı -->
+        <div id="result-screen" class="screen">
+            <!-- Rapor Alanı -->
+            <div id="report-card" class="report-card">
+                <img src="logo.png" alt="Studyprove Logo" class="report-logo" />
+                <h2 class="report-title">Pisagor Bağıntısı<br>Egzersiz Raporu</h2>
+
+                <div class="report-main-stats">
+                    <p class="final-score-label">Toplam Puan</p>
+                    <p class="final-score-value" id="final-score">0</p>
+                </div>
+
+                <div class="report-grid">
+                    <div class="r-item c-green">
+                        <span class="r-label">Doğru</span>
+                        <span class="r-value" id="final-correct">0</span>
+                    </div>
+                    <div class="r-item c-red">
+                        <span class="r-label">Yanlış</span>
+                        <span class="r-value" id="final-wrong">0</span>
+                    </div>
+                    <div class="r-item c-gray">
+                        <span class="r-label">Boş</span>
+                        <span class="r-value" id="final-blank">0</span>
+                    </div>
+                    <div class="r-item c-blue">
+                        <span class="r-label">Başarı</span>
+                        <span class="r-value" id="final-success">%0</span>
+                    </div>
+                </div>
+
+                <div class="report-message-box">
+                    <p id="final-message">Değerlendirme</p>
+                </div>
+            </div>
+
+            <!-- Butonlar -->
+            <div class="final-actions">
+                <button id="screenshot-btn" class="btn secondary-btn">📸 Raporu Resim Çek</button>
+                <button id="restart-btn" class="btn primary-btn">🔄 Tekrar Oyna</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MAIN SCRIPT (Ayrı Dosya Olmadan - Tamamen Güvenli String Formatı ile) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var startBtn = document.getElementById('start-btn');
+            var submitBtn = document.getElementById('submit-btn');
+            var skipBtn = document.getElementById('skip-btn');
+            var restartBtn = document.getElementById('restart-btn');
+            var screenshotBtn = document.getElementById('screenshot-btn');
+            var answerInput = document.getElementById('answer-input');
+
+            if (!startBtn || !submitBtn || !restartBtn || !screenshotBtn) {
+                console.error("Butonlar DOM üzerinde bulunamadı.");
+                return;
+            }
+
+            var baseTriangles = [
+                { a: 3, b: 4, c: 5 },
+                { a: 5, b: 12, c: 13 },
+                { a: 8, b: 15, c: 17 },
+                { a: 7, b: 24, c: 25 }
+            ];
+
+            var variations = [
+                { missing: 'c', right: 'A', v1: 'B', v2: 'C', flipX: false, flipY: false, swapXY: false },
+                { missing: 'c', right: 'B', v1: 'C', v2: 'A', flipX: true, flipY: false, swapXY: true },
+                { missing: 'a', right: 'C', v1: 'A', v2: 'B', flipX: false, flipY: true, swapXY: false },
+                { missing: 'b', right: 'A', v1: 'C', v2: 'B', flipX: true, flipY: true, swapXY: false },
+                { missing: 'a', right: 'B', v1: 'A', v2: 'C', flipX: false, flipY: false, swapXY: true }
+            ];
+
+            var questions = [];
+            var state = {
+                index: 0,
+                score: 0,
+                correct: 0,
+                wrong: 0,
+                blank: 0,
+                streak: 0,
+                fourStreakClaimed: false
+            };
+
+            startBtn.addEventListener('click', startGame);
+            submitBtn.addEventListener('click', function () { handleAnswer(false); });
+            skipBtn.addEventListener('click', function () { handleAnswer(true); });
+            restartBtn.addEventListener('click', restartGame);
+            screenshotBtn.addEventListener('click', takeScreenshot);
+
+            answerInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') handleAnswer(false);
+            });
+
+            function generateQuestions() {
+                questions = [];
+                var idCounter = 1;
+
+                baseTriangles.forEach(function (baseGroup) {
+                    var shuffledVars = [].concat(variations).sort(function () { return Math.random() - 0.5; });
+
+                    shuffledVars.forEach(function (v) {
+                        var k = Math.floor(Math.random() * 5) + 1;
+                        var scaledGroup = {
+                            a: baseGroup.a * k,
+                            b: baseGroup.b * k,
+                            c: baseGroup.c * k
+                        };
+
+                        questions.push({
+                            id: idCounter++,
+                            group: scaledGroup,
+                            v: v,
+                            answer: scaledGroup[v.missing]
+                        });
+                    });
+                });
+
+                questions = questions.sort(function () { return Math.random() - 0.5; });
+                questions.forEach(function (q, i) { q.id = i + 1; });
+            }
+
+            function showScreen(screenId) {
+                document.getElementById('start-screen').classList.remove('active');
+                document.getElementById('quiz-screen').classList.remove('active');
+                document.getElementById('result-screen').classList.remove('active');
+                document.getElementById(screenId).classList.add('active');
+            }
+
+            function updateUI() {
+                document.getElementById('ui-qnum').innerText = (state.index + 1) + "/20";
+                document.getElementById('ui-score').innerText = state.score;
+                document.getElementById('ui-streak').innerText = state.streak;
+                document.getElementById('ui-correct').innerText = state.correct;
+                document.getElementById('ui-wrong').innerText = state.wrong;
+                document.getElementById('ui-blank').innerText = state.blank;
+            }
+
+            function startGame() {
+                generateQuestions();
+                state = { index: 0, score: 0, correct: 0, wrong: 0, blank: 0, streak: 0, fourStreakClaimed: false };
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+
+            function loadQuestion() {
+                if (state.index >= questions.length) {
+                    endGame();
+                    return;
+                }
+
+                updateUI();
+                var q = questions[state.index];
+                var errorMsg = document.getElementById('error-message');
+
+                answerInput.value = '';
+                errorMsg.classList.remove('show');
+
+                document.getElementById('question-text').innerText = "Pisagor bağıntısını kullanarak x'i bulunuz.";
+                document.getElementById('svg-container').innerHTML = createTriangleSVG(q);
+
+                setTimeout(function () { answerInput.focus(); }, 50);
+            }
+
+            function handleAnswer(isSkipped) {
+                var errorMsg = document.getElementById('error-message');
+                var q = questions[state.index];
+                var val = answerInput.value.trim();
+
+                if (isSkipped) {
+                    state.blank++;
+                    state.streak = 0;
+                    state.fourStreakClaimed = false;
+                } else {
+                    if (val === '') {
+                        errorMsg.innerText = 'Lütfen sayı giriniz veya "Boş Bırak" butonunu kullanınız.';
+                        errorMsg.classList.add('show');
+                        return;
+                    }
+
+                    var parsed = parseInt(val, 10);
+                    if (isNaN(parsed)) {
+                        errorMsg.innerText = 'Lütfen geçerli bir tam sayı giriniz!';
+                        errorMsg.classList.add('show');
+                        return;
+                    }
+
+                    if (parsed === q.answer) {
+                        state.correct++;
+                        state.score += 10;
+                        state.streak++;
+
+                        if (state.streak === 10) {
+                            state.score += 100;
+                            showBonus("10'luk Seri! +100 Puan");
+                        } else if (state.streak === 4 && !state.fourStreakClaimed) {
+                            state.score += 15;
+                            state.fourStreakClaimed = true;
+                            showBonus("4'lük Seri! +15 Puan");
+                        } else {
+                            showBonus("Doğru! +10");
+                        }
+                    } else {
+                        state.wrong++;
+                        state.score -= 3;
+                        state.streak = 0;
+                        state.fourStreakClaimed = false;
+                        showBonus("Yanlış! -3 Puan");
+                    }
+                }
+
+                state.index++;
+                loadQuestion();
+            }
+
+            function showBonus(text) {
+                var banner = document.getElementById('bonus-banner');
+                var bannerText = document.getElementById('bonus-text');
+
+                bannerText.innerText = text;
+                banner.classList.add('show');
+
+                setTimeout(function () {
+                    banner.classList.remove('show');
+                }, 1500);
+            }
+
+            function endGame() {
+                updateUI();
+                showScreen('result-screen');
+
+                document.getElementById('final-score').innerText = state.score;
+                document.getElementById('final-correct').innerText = state.correct;
+                document.getElementById('final-wrong').innerText = state.wrong;
+                document.getElementById('final-blank').innerText = state.blank;
+
+                var successRatio = Math.round((state.correct / 20) * 100);
+                document.getElementById('final-success').innerText = "%" + successRatio;
+
+                var msgBox = document.getElementById('final-message');
+                if (state.score >= 250) {
+                    msgBox.innerText = "Harikasın! Bu konuda krallığını ilan ettin 👑";
+                    msgBox.style.color = "#10b981";
+                    msgBox.style.background = "#d1fae5";
+                } else if (state.score >= 200) {
+                    msgBox.innerText = "İyiydin! Çok güzel bir temel oturmuş 👍";
+                    msgBox.style.color = "#3b82f6";
+                    msgBox.style.background = "#dbeafe";
+                } else {
+                    msgBox.innerText = "Daha iyi olabilirsin! Pratik yaptıkça hızlanacaksın 💪";
+                    msgBox.style.color = "#f59e0b";
+                    msgBox.style.background = "#fef3c7";
+                }
+            }
+
+            function restartGame() {
+                showScreen('start-screen');
+            }
+
+            function takeScreenshot() {
+                if (typeof html2canvas === 'undefined') {
+                    alert("Görüntü alma modülü yüklenemedi, lütfen sayfayı yenileyin.");
+                    return;
+                }
+                var reportCard = document.getElementById('report-card');
+                var oldText = screenshotBtn.innerText;
+                screenshotBtn.innerText = "📸 Çekiliyor...";
+                screenshotBtn.disabled = true;
+
+                html2canvas(reportCard, { scale: 2, backgroundColor: "#ffffff" }).then(function (canvas) {
+                    var link = document.createElement('a');
+                    link.download = 'pisagor_sonuc_raporu.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    screenshotBtn.innerText = oldText;
+                    screenshotBtn.disabled = false;
+                }).catch(function (err) {
+                    console.error(err);
+                    screenshotBtn.innerText = "❌ Hata Oluştu!";
+                    setTimeout(function () {
+                        screenshotBtn.innerText = oldText;
+                        screenshotBtn.disabled = false;
+                    }, 2000);
+                });
+            }
+
+            function createTriangleSVG(q) {
+                var a = q.group.a, b = q.group.b, c = q.group.c;
+                var right = q.v.right, v1 = q.v.v1, v2 = q.v.v2;
+                var missing = q.v.missing, flipX = q.v.flipX, flipY = q.v.flipY, swapXY = q.v.swapXY;
+
+                var width = 300, height = 300;
+                var padding = 55;
+                var size = width - padding * 2;
+
+                var leg1 = a, leg2 = b;
+                if (swapXY) { leg1 = b; leg2 = a; }
+
+                var maxLeg = Math.max(leg1, leg2);
+                var scale = size / maxLeg;
+
+                var xR = 0, yR = 0;
+                var x1 = leg1 * scale, y1 = 0;
+                var x2 = 0, y2 = leg2 * scale;
+
+                if (flipX) { xR = size - xR; x1 = size - x1; x2 = size - x2; }
+                if (flipY) { yR = size - yR; y1 = size - y1; y2 = size - y2; }
+
+                xR += padding; yR += padding;
+                x1 += padding; y1 += padding;
+                x2 += padding; y2 += padding;
+
+                var cx = (xR + x1 + x2) / 3;
+                var cy = (yR + y1 + y2) / 3;
+
+                function getOutwardPos(vx, vy, dist) {
+                    var dx = vx - cx;
+                    var dy = vy - cy;
+                    var len = Math.hypot(dx, dy) || 1;
+                    return { x: vx + (dx / len) * dist, y: vy + (dy / len) * dist };
+                }
+
+                function getEdgeMidOutwardPos(px1, py1, px2, py2, dist) {
+                    var mx = (px1 + px2) / 2;
+                    var my = (py1 + py2) / 2;
+                    var dx = mx - cx;
+                    var dy = my - cy;
+                    var len = Math.hypot(dx, dy) || 1;
+                    return { x: mx + (dx / len) * dist, y: my + (dy / len) * dist };
+                }
+
+                var offRight = getOutwardPos(xR, yR, 20);
+                var off1 = getOutwardPos(x1, y1, 20);
+                var off2 = getOutwardPos(x2, y2, 20);
+
+                var labelLeg1 = ((missing === 'a' && leg1 === a) || (missing === 'b' && leg1 === b)) ? 'x' : leg1;
+                var posLeg1 = getEdgeMidOutwardPos(xR, yR, x1, y1, 20);
+
+                var labelLeg2 = ((missing === 'a' && leg2 === a) || (missing === 'b' && leg2 === b)) ? 'x' : leg2;
+                var posLeg2 = getEdgeMidOutwardPos(xR, yR, x2, y2, 20);
+
+                var labelHyp = missing === 'c' ? 'x' : c;
+                var posHyp = getEdgeMidOutwardPos(x1, y1, x2, y2, 25);
+
+                var sqSize = 18;
+                var ux1 = (x1 - xR) / (Math.hypot(x1 - xR, y1 - yR) || 1);
+                var uy1 = (y1 - yR) / (Math.hypot(x1 - xR, y1 - yR) || 1);
+                var ux2 = (x2 - xR) / (Math.hypot(x2 - xR, y2 - yR) || 1);
+                var uy2 = (y2 - yR) / (Math.hypot(x2 - xR, y2 - yR) || 1);
+
+                var sqAx = xR + ux1 * sqSize;
+                var sqAy = yR + uy1 * sqSize;
+                var sqCx = xR + ux2 * sqSize;
+                var sqCy = yR + uy2 * sqSize;
+                var sqBx = xR + ux1 * sqSize + ux2 * sqSize;
+                var sqBy = yR + uy1 * sqSize + uy2 * sqSize;
+
+                // Nokta kare içinde ve köşeye biraz yakın
+                var dotX = xR + (ux1 * sqSize + ux2 * sqSize) / 2;
+                var dotY = yR + (uy1 * sqSize + uy2 * sqSize) / 2;
+
+                var colorLeg1 = labelLeg1 === 'x' ? '#ef4444' : '#4f46e5';
+                var colorLeg2 = labelLeg2 === 'x' ? '#ef4444' : '#4f46e5';
+                var colorHyp = labelHyp === 'x' ? '#ef4444' : '#4f46e5';
+
+                var svg = "<svg viewBox=\"0 0 " + width + " " + height + "\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n";
+                svg += "<defs>\n<filter id=\"bg-glow\" x=\"-20%\" y=\"-20%\" width=\"140%\" height=\"140%\">\n<feDropShadow dx=\"0\" dy=\"0\" stdDeviation=\"2\" flood-color=\"#ffffff\"/>\n</filter>\n</defs>\n";
+
+                svg += "<polygon points=\"" + xR + "," + yR + " " + x1 + "," + y1 + " " + x2 + "," + y2 + "\" fill=\"#f1f5f9\" stroke=\"#4f46e5\" stroke-width=\"3\" stroke-linejoin=\"round\"/>\n";
+
+                // Dik Açı Sembolü (Kare ve Nokta)
+                svg += "<polyline points=\"" + sqAx + "," + sqAy + " " + sqBx + "," + sqBy + " " + sqCx + "," + sqCy + "\" fill=\"none\" stroke=\"#4f46e5\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n";
+                svg += "<circle cx=\"" + dotX + "\" cy=\"" + dotY + "\" r=\"2.5\" fill=\"#4f46e5\"/>\n";
+
+                svg += "<text x=\"" + offRight.x + "\" y=\"" + offRight.y + "\" dominant-baseline=\"central\" text-anchor=\"middle\" font-size=\"20\" font-weight=\"900\" fill=\"#0f172a\">" + right + "</text>\n";
+                svg += "<text x=\"" + off1.x + "\" y=\"" + off1.y + "\" dominant-baseline=\"central\" text-anchor=\"middle\" font-size=\"20\" font-weight=\"900\" fill=\"#0f172a\">" + v1 + "</text>\n";
+                svg += "<text x=\"" + off2.x + "\" y=\"" + off2.y + "\" dominant-baseline=\"central\" text-anchor=\"middle\" font-size=\"20\" font-weight=\"900\" fill=\"#0f172a\">" + v2 + "</text>\n";
+
+                svg += "<text x=\"" + posLeg1.x + "\" y=\"" + posLeg1.y + "\" dominant-baseline=\"central\" text-anchor=\"middle\" font-size=\"22\" font-weight=\"700\" fill=\"" + colorLeg1 + "\" filter=\"url(#bg-glow)\">" + labelLeg1 + "</text>\n";
+                svg += "<text x=\"" + posLeg2.x + "\" y=\"" + posLeg2.y + "\" dominant-baseline=\"central\" text-anchor=\"middle\" font-size=\"22\" font-weight=\"700\" fill=\"" + colorLeg2 + "\" filter=\"url(#bg-glow)\">" + labelLeg2 + "</text>\n";
+                svg += "<text x=\"" + posHyp.x + "\" y=\"" + posHyp.y + "\" dominant-baseline=\"central\" text-anchor=\"middle\" font-size=\"24\" font-weight=\"800\" fill=\"" + colorHyp + "\" filter=\"url(#bg-glow)\">" + labelHyp + "</text>\n";
+
+                svg += "</svg>";
+
+                return svg;
+            }
+        });
+    </script>
+</body>
+
+</html>
